@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.jonata.swapi.dto.PlanetDTO;
 import com.jonata.swapi.model.Planet;
-import com.jonata.swapi.model.PlanetSwapi;
 import com.jonata.swapi.resources.util.URL;
 import com.jonata.swapi.services.PlanetService;
 import com.jonata.swapi.services.SwapiService;
@@ -56,8 +55,14 @@ public class PlanetResource {
 
     @GetMapping("/fromAPI")
     @ApiOperation(value = "Return a list of all planets from https://swapi.dev.")
-    public ResponseEntity<List<PlanetSwapi>> findAllApiPlanets() throws ConnectionException {
+    public ResponseEntity<List<PlanetDTO>> findAllApiPlanets() throws ConnectionException {
         return ResponseEntity.ok().body(swapiService.findAll());
+    }
+
+    @GetMapping("/fromAPI/planet")
+    @ApiOperation(value = "Return a list of all planets from https://swapi.dev.")
+    public ResponseEntity<PlanetDTO> findOneApiPlanetByName(@RequestParam(value = "name", defaultValue = "") String name) throws ConnectionException {
+        return ResponseEntity.ok().body(swapiService.findOneByName(name));
     }
 
     @GetMapping("/planet")
