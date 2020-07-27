@@ -18,7 +18,6 @@ public class PlanetDTO implements Serializable {
     String name;
     String terrain;
     String climate;
-    String aparitions;
     
     public PlanetDTO(Planet obj) {
         id = obj.getId();

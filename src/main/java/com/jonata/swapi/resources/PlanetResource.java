@@ -5,11 +5,15 @@ import java.util.List;
 
 import com.jonata.swapi.dto.PlanetDTO;
 import com.jonata.swapi.model.Planet;
+import com.jonata.swapi.model.PlanetSwapi;
 import com.jonata.swapi.resources.util.URL;
 import com.jonata.swapi.services.PlanetService;
+import com.jonata.swapi.services.SwapiService;
+import com.jonata.swapi.services.exception.ConnectionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,25 +25,42 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 @RestController
 @RequestMapping(value = "/planets")
-public class PlanetaResource {
+@Api(value = "API REST STAR WARS PLANETS")
+@CrossOrigin(origins = "*")
+public class PlanetResource {
 
     @Autowired
     private PlanetService planetService;
 
+    @Autowired
+    private SwapiService swapiService;
+
     @GetMapping
-    public ResponseEntity<List<Planet>> findAll() {
+    @ApiOperation(value = "Return a list of all planets from database.")
+    public ResponseEntity<List<PlanetDTO>> findAll() {
         return ResponseEntity.ok().body(planetService.findAll());
     }
 
+    @GetMapping("/fromAPI")
+    @ApiOperation(value = "Return a list of all planets from https://swapi.dev.")
+    public ResponseEntity<List<PlanetSwapi>> findAllApiPlanets() throws ConnectionException {
+        return ResponseEntity.ok().body(swapiService.findAll());
+    }
+
     @GetMapping("/planet")
+    @ApiOperation(value = "Return a Planet by name from database.")
     public ResponseEntity<List<Planet>> findName(@RequestParam(value = "name", defaultValue = "") String name) {
         name = URL.decodeParam(name);
         return ResponseEntity.ok().body(planetService.findByName(name));
     }
 
     @PostMapping
+    @ApiOperation(value = "Insert a planet to database.")
     public ResponseEntity<Void> insert(@RequestBody PlanetDTO objDto) {
 		Planet obj = planetService.fromDTO(objDto);
 		obj = planetService.insert(obj);

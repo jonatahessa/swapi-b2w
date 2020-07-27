@@ -2,10 +2,11 @@ package com.jonata.swapi.model;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,6 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @EqualsAndHashCode
-@AllArgsConstructor
 @Document(collection = "planet")
 public class Planet implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -26,4 +26,14 @@ public class Planet implements Serializable {
     String id;
     String name;
     String terrain;
+    String climate;
+    @JsonIgnore
+    String [] films;
+
+    public Planet(String id, String name, String terrain, String climate) {
+        this.id = id;
+        this.name = name;
+        this.terrain = terrain;
+        this.climate = climate;
+    }
 }
