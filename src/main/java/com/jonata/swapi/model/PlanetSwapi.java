@@ -1,6 +1,5 @@
 package com.jonata.swapi.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Getter;
@@ -12,6 +11,5 @@ import lombok.Setter;
 public class PlanetSwapi {
 
     Planet[] results;
-    @JsonIgnore
     String next;
 }

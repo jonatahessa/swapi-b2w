@@ -29,9 +29,9 @@ public class Planet implements Serializable {
     String name;
     String terrain;
     String climate;
-    @JsonIgnore
     @Transient
     String [] films;
+    int aparitions;
 
     public Planet(String id, String name, String terrain, String climate) {
         this.id = id;

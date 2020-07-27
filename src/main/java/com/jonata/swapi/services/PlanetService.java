@@ -22,6 +22,9 @@ public class PlanetService {
   PlanetRepository planetRepository;
 
   @Autowired
+  SwapiService swapiService;
+
+  @Autowired
   HttpConsumer httpConsumer;
 
   public List<PlanetDTO> findAll() {
@@ -44,6 +47,7 @@ public class PlanetService {
 					"The Planet name must be unique in the database");
 		}
     obj.setId(null);
+    obj.setAparitions(swapiService.aparitionsCount(obj.getName()));
     return planetRepository.save(obj);
   }
 

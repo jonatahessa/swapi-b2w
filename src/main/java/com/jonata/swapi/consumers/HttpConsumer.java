@@ -10,7 +10,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class HttpConsumer {
     
-    public ResponseEntity<PlanetSwapi> getAllRequisition(String url) {
+    public ResponseEntity<PlanetSwapi> getRequisition(String url) {
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<PlanetSwapi> response = restTemplate.getForEntity(url, PlanetSwapi.class);
 
