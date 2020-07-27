@@ -1,69 +1,95 @@
 package com.jonata.swapi.resources;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.restdocs.RestDocumentationContextProvider;
-import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jonata.swapi.model.Planet;
+import com.jonata.swapi.services.PlanetService;
 
-@ExtendWith({ RestDocumentationExtension.class, SpringExtension.class })
 @SpringBootTest
-@AutoConfigureRestDocs(outputDir = "target/generated-snippets")
+@AutoConfigureMockMvc
 public class PlanetResourceTest {
-    
+
     @Autowired
-	private WebApplicationContext context;
-	
-	private MockMvc mockMvc;
+    private MockMvc mvc;
 
-	@BeforeEach
-    public void setUp(WebApplicationContext webApplicationContext,
-                      RestDocumentationContextProvider restDocumentation) {
+    @Autowired
+    private PlanetService planetService;
 
-        this.mockMvc = MockMvcBuilders
-                .webAppContextSetup(webApplicationContext)
-                .apply(documentationConfiguration(restDocumentation))
-				.build();
+    private Planet mockedPlanet;
+
+    @BeforeEach
+	public void before() {
+		mockedPlanet = new Planet();
+		mockedPlanet.setName("Earth");
+		mockedPlanet.setClimate("crazy");
+		mockedPlanet.setTerrain("desert");
 	}
-	
+
 	@Test
-    public void testInsertPlanet() throws Exception {
-	    Planet planet = new Planet(null, "Vênus", "Gasoso");
-		String planetsJson = new ObjectMapper().writeValueAsString(planet);
-		System.out.println(planetsJson);
-        mockMvc.perform(post("/planets")
-                .content(planetsJson)
-                .contentType("application/json")).andDo(print())
-                .andExpect(status().isCreated())
-                .andDo(print());
+	public void insertPlaneValid201() throws Exception {
+		mvc.perform(post("/planets").content(toJson(mockedPlanet)).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isCreated());
+	}
+
+	@Test
+	public void insertPlanetDuplicated409() throws Exception {
+		mvc.perform(post("/planets").content(toJson(mockedPlanet)).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isConflict());
+	}
+
+	@Test
+	public void insertPlanetUnsupportedMediaType415() throws Exception {
+		mvc.perform(post("/planets").content(toJson(mockedPlanet))).andExpect(status().isUnsupportedMediaType());
+	}
+
+	@Test
+	public void insertEmptyPlanet400() throws Exception {
+		mvc.perform(post("/planets").content("").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	public void insertPlanetWithoutName400() throws Exception {
+		mockedPlanet.setName(null);
+		mvc.perform(post("/planets").content(toJson(mockedPlanet)).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
     }
 
     @Test
-    public void testFindAll() throws Exception {
-           mockMvc.perform(get("/planets")
-                   .contentType("application/json")).andDo(print())
-                   .andExpect(status().isOk())
-                   .andDo(document("{methodName}",
-                           preprocessRequest(prettyPrint()),
-                           preprocessResponse(prettyPrint())));
+	public void mustGetPlanetById() throws Exception {
+		Planet obj = planetService.findOneByName(mockedPlanet.getName());
+        mvc.perform(get("/planets/" +  obj.getId())
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
     }
+    
+    @Test
+	public void mustDeletePlanet() throws Exception {
+		Planet obj = planetService.findOneByName(mockedPlanet.getName());
+        mvc.perform(delete("/planets/" +  obj.getId())
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNoContent());
+    }
+
+	private String toJson(Object obj) {
+		try {
+			return new ObjectMapper().writeValueAsString(obj);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+    
+
 }
