@@ -82,7 +82,7 @@ public class PlanetResource {
     }
     
     @PutMapping("/{id}")
-    @ApiOperation(value = "Update a planet to database by ID.")
+    @ApiOperation(value = "Update a planet from database by ID.")
     public ResponseEntity<Void> update(@RequestBody PlanetDTO objDto, @PathVariable String id) {
         Planet obj = planetService.fromDTO(objDto);
         obj.setId(id);
@@ -91,7 +91,7 @@ public class PlanetResource {
    }
 
     @DeleteMapping("/{id}")
-    @ApiOperation(value = "Delets a planet to database by ID.")
+    @ApiOperation(value = "Delets a planet from database by ID.")
  	public ResponseEntity<Void> delete(@PathVariable String id) {
 		planetService.delete(id);
 		return ResponseEntity.noContent().build();
