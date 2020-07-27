@@ -10,5 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PlanetRepository extends MongoRepository<Planet, String> {
 
-    List<Planet> findByNameIgnoreCase(String name);
+    List<Planet> findByNameLikeIgnoreCase(String name);
+
+    Planet findByName(String name);
 }

@@ -9,6 +9,8 @@ import com.jonata.swapi.dto.PlanetDTO;
 import com.jonata.swapi.model.Planet;
 import com.jonata.swapi.repositories.PlanetRepository;
 import com.jonata.swapi.services.exception.ObjectNotFoundException;
+import com.jonata.swapi.services.exception.PlanetDuplicatedInDatabaseException;
+import com.jonata.swapi.services.exception.PlanetInvalidAttribute;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,10 +32,17 @@ public class PlanetService {
 
   public Planet findById(String id) {
     Optional<Planet> obj = planetRepository.findById(id);
-    return obj.orElseThrow(() -> new ObjectNotFoundException("Planeta não encontrado"));
+    return obj.orElseThrow(() -> new ObjectNotFoundException("Planet not found"));
   }
 
-  public Planet insert(final Planet obj) {
+  public Planet insert(final Planet obj) throws PlanetInvalidAttribute {
+    if (obj.getName() == null || obj.getName().isEmpty()) {
+      throw new PlanetInvalidAttribute("The Planet name cannot be empty");
+    }
+    if (planetRepository.findByName(obj.getName()) != null) {
+			throw new PlanetDuplicatedInDatabaseException(
+					"The Planet name must be unique in the database");
+		}
     obj.setId(null);
     return planetRepository.save(obj);
   }
@@ -54,8 +63,12 @@ public class PlanetService {
     planetRepository.deleteById(id);
   }
 
-  public List<Planet> findByName(String name) {
-    return planetRepository.findByNameIgnoreCase(name);
+  public List<Planet> findByNameLike(String name) {
+    return planetRepository.findByNameLikeIgnoreCase(name);
+  }
+
+  public Planet findOneByName(String name) {
+    return planetRepository.findByName(name);
   }
 
   public Planet fromDTO(PlanetDTO objDto) {

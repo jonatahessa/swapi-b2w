@@ -5,6 +5,8 @@ import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.EqualsAndHashCode;
@@ -28,6 +30,7 @@ public class Planet implements Serializable {
     String terrain;
     String climate;
     @JsonIgnore
+    @Transient
     String [] films;
 
     public Planet(String id, String name, String terrain, String climate) {

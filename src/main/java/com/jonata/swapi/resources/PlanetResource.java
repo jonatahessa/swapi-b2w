@@ -10,6 +10,7 @@ import com.jonata.swapi.resources.util.URL;
 import com.jonata.swapi.services.PlanetService;
 import com.jonata.swapi.services.SwapiService;
 import com.jonata.swapi.services.exception.ConnectionException;
+import com.jonata.swapi.services.exception.PlanetInvalidAttribute;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +47,13 @@ public class PlanetResource {
         return ResponseEntity.ok().body(planetService.findAll());
     }
 
+    @GetMapping("/{id}")
+    @ApiOperation(value = "Update a planet to database by ID.")
+    public ResponseEntity<PlanetDTO> findById(@PathVariable String id) {
+        PlanetDTO objDto = new PlanetDTO(planetService.findById(id));
+        return ResponseEntity.ok().body(objDto);
+   }
+
     @GetMapping("/fromAPI")
     @ApiOperation(value = "Return a list of all planets from https://swapi.dev.")
     public ResponseEntity<List<PlanetSwapi>> findAllApiPlanets() throws ConnectionException {
@@ -53,15 +61,15 @@ public class PlanetResource {
     }
 
     @GetMapping("/planet")
-    @ApiOperation(value = "Return a Planet by name from database.")
+    @ApiOperation(value = "Return a Planet from database by 'like' Name.")
     public ResponseEntity<List<Planet>> findName(@RequestParam(value = "name", defaultValue = "") String name) {
         name = URL.decodeParam(name);
-        return ResponseEntity.ok().body(planetService.findByName(name));
+        return ResponseEntity.ok().body(planetService.findByNameLike(name));
     }
 
     @PostMapping
     @ApiOperation(value = "Insert a planet to database.")
-    public ResponseEntity<Void> insert(@RequestBody PlanetDTO objDto) {
+    public ResponseEntity<Void> insert(@RequestBody PlanetDTO objDto) throws PlanetInvalidAttribute {
 		Planet obj = planetService.fromDTO(objDto);
 		obj = planetService.insert(obj);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
@@ -69,6 +77,7 @@ public class PlanetResource {
     }
     
     @PutMapping("/{id}")
+    @ApiOperation(value = "Update a planet to database by ID.")
     public ResponseEntity<Void> update(@RequestBody PlanetDTO objDto, @PathVariable String id) {
         Planet obj = planetService.fromDTO(objDto);
         obj.setId(id);
@@ -77,6 +86,7 @@ public class PlanetResource {
    }
 
     @DeleteMapping("/{id}")
+    @ApiOperation(value = "Delets a planet to database by ID.")
  	public ResponseEntity<Void> delete(@PathVariable String id) {
 		planetService.delete(id);
 		return ResponseEntity.noContent().build();
