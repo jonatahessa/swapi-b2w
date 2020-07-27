@@ -47,7 +47,7 @@ public class PlanetResource {
     }
 
     @GetMapping("/{id}")
-    @ApiOperation(value = "Update a planet to database by ID.")
+    @ApiOperation(value = "Return a planet to database by ID.")
     public ResponseEntity<PlanetDTO> findById(@PathVariable String id) {
         PlanetDTO objDto = new PlanetDTO(planetService.findById(id));
         return ResponseEntity.ok().body(objDto);
@@ -60,7 +60,7 @@ public class PlanetResource {
     }
 
     @GetMapping("/fromAPI/planet")
-    @ApiOperation(value = "Return a list of all planets from https://swapi.dev.")
+    @ApiOperation(value = "Return a single planet from by name https://swapi.dev.")
     public ResponseEntity<PlanetDTO> findOneApiPlanetByName(@RequestParam(value = "name", defaultValue = "") String name) throws ConnectionException {
         return ResponseEntity.ok().body(swapiService.findOneByName(name));
     }
