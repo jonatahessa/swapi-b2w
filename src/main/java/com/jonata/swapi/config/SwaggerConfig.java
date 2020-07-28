@@ -3,11 +3,7 @@ package com.jonata.swapi.config;
 import java.util.ArrayList;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import springfox.documentation.builders.PathSelectors;

@@ -1,6 +1,5 @@
 package com.jonata.swapi.consumers;
 
-import com.jonata.swapi.model.Planet;
 import com.jonata.swapi.model.PlanetSwapi;
 
 import org.springframework.http.ResponseEntity;
