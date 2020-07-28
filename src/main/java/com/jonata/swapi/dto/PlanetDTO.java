@@ -3,8 +3,6 @@ package com.jonata.swapi.dto;
 import java.io.Serializable;
 
 import com.jonata.swapi.model.Planet;
-import com.jonata.swapi.model.PlanetSwapi;
-import com.jonata.swapi.services.PlanetService;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

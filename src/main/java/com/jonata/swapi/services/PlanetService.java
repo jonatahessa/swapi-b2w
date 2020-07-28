@@ -60,6 +60,7 @@ public class PlanetService {
   private void updateData(Planet newObj, Planet obj) {
     newObj.setName(obj.getName());
     newObj.setTerrain(obj.getTerrain());
+    newObj.setClimate(obj.getClimate());
   }
 
   public void delete(String id) {
